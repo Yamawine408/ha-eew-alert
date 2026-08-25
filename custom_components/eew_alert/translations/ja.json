@@ -1,0 +1,37 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "EEW Alert",
+        "description": "P2P地震情報から緊急地震速報を受信し、Chromecastデバイスへ警告画像をキャストします。",
+        "data": {
+          "cast_device": "キャスト先デバイス名(Chromecastのフレンドリー名)",
+          "target_prefs": "対象都道府県(未選択の場合は全国の最大震度で判定)",
+          "min_scale": "自動反応する最小震度",
+          "target_lights": "自動点灯する照明(任意)",
+          "target_locks": "自動解錠するロック(任意・安全確保用。誤作動リスクを理解の上で設定してください)",
+          "ignore_test": "訓練・試験配信を無視する",
+          "presence_entities": "在宅検知に使う person/device_tracker(未選択なら在宅検知しない・常に実行)"
+        }
+      }
+    },
+    "abort": {
+      "single_instance_allowed": "既に設定済みです"
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "cast_device": "キャスト先デバイス名(Chromecastのフレンドリー名)",
+          "target_prefs": "対象都道府県(未選択の場合は全国の最大震度で判定)",
+          "min_scale": "自動反応する最小震度",
+          "target_lights": "自動点灯する照明(任意)",
+          "target_locks": "自動解錠するロック(任意・安全確保用。誤作動リスクを理解の上で設定してください)",
+          "ignore_test": "訓練・試験配信を無視する",
+          "presence_entities": "在宅検知に使う person/device_tracker(未選択なら在宅検知しない・常に実行)"
+        }
+      }
+    }
+  }
+}
