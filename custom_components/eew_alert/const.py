@@ -3,12 +3,8 @@
 DOMAIN = "eew_alert"
 
 CONF_MIN_SCALE = "min_scale"
-CONF_CAST_DEVICE = "cast_device"
 CONF_IGNORE_TEST = "ignore_test"
 CONF_TARGET_PREFS = "target_prefs"
-CONF_TARGET_LIGHTS = "target_lights"
-CONF_TARGET_LOCKS = "target_locks"
-CONF_PRESENCE_ENTITIES = "presence_entities"
 
 DEFAULT_MIN_SCALE = 45  # 震度5弱
 DEFAULT_IGNORE_TEST = True
@@ -40,9 +36,7 @@ SCALE_LABEL = {
     50: "5強", 55: "6弱", 60: "6強", 70: "7",
 }
 
-SERVICE_CAST_ALERT = "cast_alert"
 ATTR_LABEL = "label"
 ATTR_HYPOCENTER = "hypocenter"
 ATTR_SCALE = "scale"
 ATTR_PREFS = "prefs"
-ATTR_DEVICE_NAME = "device_name"
