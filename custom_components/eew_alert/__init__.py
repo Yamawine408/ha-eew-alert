@@ -19,26 +19,17 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.dispatcher import async_dispatcher_send
 
-from .cast import async_cast_alert_image
 from .const import (
-    CONF_CAST_DEVICE,
     CONF_IGNORE_TEST,
     CONF_MIN_SCALE,
-    CONF_PRESENCE_ENTITIES,
-    CONF_TARGET_LIGHTS,
-    CONF_TARGET_LOCKS,
     CONF_TARGET_PREFS,
     DEFAULT_IGNORE_TEST,
     DEFAULT_MIN_SCALE,
-    DEFAULT_PRESENCE_ENTITIES,
-    DEFAULT_TARGET_LIGHTS,
-    DEFAULT_TARGET_LOCKS,
     DEFAULT_TARGET_PREFS,
     DOMAIN,
     EVENT_EEW_CANCELLED,
     EVENT_EEW_TRIGGERED,
     SCALE_LABEL,
-    SERVICE_CAST_ALERT,
     WS_URL,
 )
 
@@ -154,85 +145,6 @@ class EewListener:
         self.hass.bus.async_fire(EVENT_EEW_TRIGGERED, event_data)
         async_dispatcher_send(self.hass, SIGNAL_UPDATE)
 
-        min_scale = self.entry.options.get(CONF_MIN_SCALE, DEFAULT_MIN_SCALE)
-        device_name = self.entry.options.get(CONF_CAST_DEVICE)
-        target_prefs = self.entry.options.get(CONF_TARGET_PREFS, DEFAULT_TARGET_PREFS)
-
-        if target_prefs:
-            # 対象都道府県が設定されている場合は、その地域の震度で判定する
-            relevant_scale = max(
-                (
-                    p.get("scale", -1)
-                    for p in prefs
-                    if any(t in p.get("pref", "") for t in target_prefs)
-                ),
-                default=-1,
-            )
-        else:
-            relevant_scale = max_scale
-
-        if relevant_scale >= min_scale:
-            self.hass.async_create_task(self._async_trigger_response(device_name))
-
-    def _is_anyone_home(self) -> bool:
-        """在宅検知用エンティティが1つでも'home'状態ならTrue。未設定なら常にTrue。"""
-        presence_entities = self.entry.options.get(
-            CONF_PRESENCE_ENTITIES, DEFAULT_PRESENCE_ENTITIES
-        )
-        if not presence_entities:
-            return True
-        return any(
-            self.hass.states.is_state(entity_id, "home")
-            for entity_id in presence_entities
-        )
-
-    async def _async_trigger_response(
-        self, device_name: str | None, force: bool = False
-    ) -> None:
-        """キャスト・照明ON・解錠を、1つ失敗しても他を止めずに実行する。
-
-        在宅検知用エンティティが設定されている場合は、誰も在宅でなければ
-        何も実行しない(無人の家で照明・解錠を作動させても意味がなく、
-        特に解錠は誤って空き家状態を招くリスクがあるため)。
-        force=Trueの場合は在宅検知を無視する(テストボタン用)。
-        """
-        if not force and not self._is_anyone_home():
-            _LOGGER.info("eew_alert: no one home, skipping response")
-            return
-
-        if device_name:
-            try:
-                await async_cast_alert_image(
-                    self.hass,
-                    device_name,
-                    self.state.label,
-                    self.state.hypocenter,
-                    self.state.prefs,
-                )
-            except Exception:  # noqa: BLE001
-                _LOGGER.exception("cast_alert_image failed")
-
-        target_lights = self.entry.options.get(CONF_TARGET_LIGHTS, DEFAULT_TARGET_LIGHTS)
-        if target_lights:
-            try:
-                await self.hass.services.async_call(
-                    "light", "turn_on", {"entity_id": target_lights}, blocking=True
-                )
-            except Exception:  # noqa: BLE001
-                _LOGGER.exception("light.turn_on failed")
-
-        # 解錠は安全確保のためのオプション機能。誤作動時のリスクがあるため、
-        # ユーザーが明示的に対象ロックを設定した場合のみ動作する。
-        target_locks = self.entry.options.get(CONF_TARGET_LOCKS, DEFAULT_TARGET_LOCKS)
-        if target_locks:
-            try:
-                await self.hass.services.async_call(
-                    "lock", "unlock", {"entity_id": target_locks}, blocking=True
-                )
-            except Exception:  # noqa: BLE001
-                _LOGGER.exception("lock.unlock failed")
-
-
 async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data.setdefault(DOMAIN, {})
     listener = EewListener(hass, entry)
@@ -240,18 +152,6 @@ async def async_setup_entry(hass: HomeAssistant, entry: ConfigEntry) -> bool:
     hass.data[DOMAIN][entry.entry_id] = listener
 
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
-
-    async def _handle_cast_alert(call) -> None:
-        device_name = call.data.get("device_name") or entry.options.get(CONF_CAST_DEVICE)
-        if not device_name:
-            _LOGGER.error("cast_alert: device_name not specified and no default configured")
-            return
-        label = call.data.get("label", listener.state.label)
-        hypocenter = call.data.get("hypocenter", listener.state.hypocenter)
-        prefs = call.data.get("prefs", listener.state.prefs)
-        await async_cast_alert_image(hass, device_name, label, hypocenter, prefs)
-
-    hass.services.async_register(DOMAIN, SERVICE_CAST_ALERT, _handle_cast_alert)
 
     entry.async_on_unload(entry.add_update_listener(_async_update_listener))
     return True
