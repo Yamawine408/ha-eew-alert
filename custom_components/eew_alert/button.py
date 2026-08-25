@@ -8,7 +8,7 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import SIGNAL_UPDATE, EewListener, EewState
-from .const import CONF_CAST_DEVICE, CONF_TARGET_PREFS, DOMAIN
+from .const import CONF_CAST_DEVICE, CONF_TARGET_PREFS, DOMAIN, EVENT_EEW_TRIGGERED
 
 
 async def async_setup_entry(
@@ -50,4 +50,17 @@ class EewAlertTestButton(ButtonEntity):
         async_dispatcher_send(self.hass, SIGNAL_UPDATE)
 
         device_name = self._entry.options.get(CONF_CAST_DEVICE)
+
+	## Adding the following to fire a test event ##
+        self.hass.bus.async_fire(
+            EVENT_EEW_TRIGGERED,
+            {
+                "id": "test",
+                "scale": 50,
+                "label": "5強",
+                "hypocenter": "テスト震源",
+                "prefs": [{"pref": test_pref, "scale": 50}],
+            },
+        )
+
         await self._listener._async_trigger_response(device_name, force=True)  # noqa: SLF001

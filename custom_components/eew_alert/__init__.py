@@ -145,6 +145,7 @@ class EewListener:
         )
 
         event_data = {
+            "id": data.get("id", ""),
             "scale": max_scale,
             "label": self.state.label,
             "hypocenter": hypocenter,
