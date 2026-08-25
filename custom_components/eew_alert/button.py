@@ -49,8 +49,6 @@ class EewAlertTestButton(ButtonEntity):
         )
         async_dispatcher_send(self.hass, SIGNAL_UPDATE)
 
-        device_name = self._entry.options.get(CONF_CAST_DEVICE)
-
 	## Adding the following to fire a test event ##
         self.hass.bus.async_fire(
             EVENT_EEW_TRIGGERED,
@@ -63,4 +61,3 @@ class EewAlertTestButton(ButtonEntity):
             },
         )
 
-        await self._listener._async_trigger_response(device_name, force=True)  # noqa: SLF001
