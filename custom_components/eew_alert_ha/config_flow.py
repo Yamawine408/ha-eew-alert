@@ -21,6 +21,17 @@ from .const import (
 def _options_schema(defaults: dict[str, Any]) -> vol.Schema:
     return vol.Schema(
         {
+            vol.Required(
+                CONF_MIN_SCALE,
+                default=DEFAULT_MIN_SCALE,
+            ): selector.NumberSelector(
+                selector.NumberSelectorConfig(
+                    min=10,
+                    max=70,
+                    step=5,
+                    mode=selector.NumberSelectorMode.DROPDOWN,
+                )
+            )
             vol.Optional(
                 CONF_TARGET_PREFS,
                 default=defaults.get(
