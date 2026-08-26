@@ -1,6 +1,6 @@
 """Constants for the EEW Alert integration."""
 
-DOMAIN = "eew_alert"
+DOMAIN = "eew_alert_ha"
 
 CONF_MIN_SCALE = "min_scale"
 CONF_IGNORE_TEST = "ignore_test"
