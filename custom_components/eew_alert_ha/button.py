@@ -37,6 +37,10 @@ class EewAlertTestButton(ButtonEntity):
         self._attr_unique_id = f"{entry.entry_id}_test_button"
 
     async def async_press(self) -> None:
+        target_prefs = self._config_entry.options.get(
+            CONF_TARGET_PREFS,
+            DEFAULT_TARGET_PREFS,
+        )
         test_prefs = (
             [{"pref": f"{pref}県", "scale": 50} for pref in target_prefs]
         )
