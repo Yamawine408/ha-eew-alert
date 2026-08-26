@@ -1,23 +1,23 @@
-# EEW Alert for Home Assistant
+# EEW Alert HA
 
-[P2P地震情報](https://www.p2pquake.net/)のWebSocketに直接接続し、緊急地震速報（コード556）を受信するHome Assistantカスタムコンポーネントです。しきい値以上の震度を受信すると、警告画像を自動生成してChromecast/Google Home系デバイスへキャストし、照明を点灯、必要に応じて玄関の鍵を解錠します。
+このHome Assistantインテグレーションは[EEW Alert for Home Assistant](https://github.com/kotarou2211/ha-eew-alert)のforkです。
+元のコードは警報発令時にChromecastを使って照明や鍵の制御を行っていますが、本forkではChromecastの部分を全て取り除き、警報はHome Assistantへの
+eventとなっています。このため警報発令時の機器の制御はユーザがHome Assistantのautomationで記述します。
+
+~~P2P地震情報のWebSocketに直接接続し、緊急地震速報（コード556）を受信するHome Assistantカスタムコンポーネントです。しきい値以上の震度を受信すると、警告画像を自動生成してChromecast/Google Home系デバイスへキャストし、照明を点灯、必要に応じて玄関の鍵を解錠します。~~
 
 MQTTブローカーや外部コンテナは不要で、Home Assistantだけで完結します。
-
-![生成される警告画像のサンプル](docs/sample_alert.png)
-
-上記はテストボタンで生成したサンプル画像です。震度に応じて対象都道府県が地図上でハイライトされ、右側に震源・想定震度が表示されます。
 
 ## 特徴
 
 - P2P地震情報のWebSocketに直接接続（追加のミドルウェアなし）
 - しきい値震度・対象都道府県を設定画面（Config Flow）から設定可能
-- 警告画像を動的生成してChromecast/Google Nest系デバイスへキャスト
-- 対象の照明をON、対象の鍵を解錠（オプション、任意設定）
-- 在宅検知エンティティを設定すると、誰も在宅でない場合は反応をスキップ（無人宅での誤解錠防止）
+- ~~警告画像を動的生成してChromecast/Google Nest系デバイスへキャスト~~
+- ~~対象の照明をON、対象の鍵を解錠（オプション、任意設定）~~
+- ~~在宅検知エンティティを設定すると、誰も在宅でない場合は反応をスキップ（無人宅での誤解錠防止）~~
 - 訓練・試験配信を無視するかどうかを設定可能
 - 動作確認用の「テスト送信」ボタンを提供
-- キャスト失敗時は自動リトライ（デフォルト5回）
+- ~~キャスト失敗時は自動リトライ（デフォルト5回）~~
 
 ## インストール
 
@@ -25,17 +25,17 @@ MQTTブローカーや外部コンテナは不要で、Home Assistantだけで�
 
 1. HACS → Integrations → 右上のメニュー → Custom repositories
 2. このリポジトリのURLを追加し、カテゴリは「Integration」を選択
-3. `EEW Alert` を検索してインストール
+3. `EEW Alert HA` を検索してインストール
 4. Home Assistantを再起動
 
 ### 手動インストール
 
-1. `custom_components/eew_alert` を Home Assistantの `config/custom_components/` 配下にコピー
+1. `custom_components/eew_alert_ha` を Home Assistantの `config/custom_components/` 配下にコピー
 2. Home Assistantを再起動
 
 ## 設定
 
-Home Assistant → 設定 → デバイスとサービス → 統合を追加 → `EEW Alert` を検索し、画面の指示に従って設定します。
+Home Assistant → 設定 → デバイスとサービス → 統合を追加 → `EEW Alert HA` を検索し、画面の指示に従って設定します。
 
 主な設定項目:
 
@@ -43,22 +43,39 @@ Home Assistant → 設定 → デバイスとサービス → 統合を追加 �
 |---|---|
 | しきい値震度 | この震度以上でキャスト等のアクションを実行 |
 | 対象都道府県 | 指定した場合、その地域の震度で判定（未指定なら全国最大震度で判定） |
-| キャスト先デバイス | `catt`で認識されるデバイス名（例: `リビング`） |
-| 対象の照明 | 震度到達時にONにする `light.*` エンティティ |
-| 対象の鍵 | 震度到達時に解錠する `lock.*` エンティティ（任意） |
-| 在宅検知エンティティ | 指定した場合、いずれも不在時はアクションをスキップ |
+| ~~キャスト先デバイス~~ | ~~`catt`で認識されるデバイス名（例: `リビング`）~~ |
+| ~~対象の照明~~ | ~~震度到達時にONにする `light.*` エンティティ~~ |
+| ~~対象の鍵~~ | ~~震度到達時に解錠する `lock.*` エンティティ（任意）~~ |
+| ~~在宅検知エンティティ~~ | ~~指定した場合、いずれも不在時はアクションをスキップ~~ |
 | 訓練・試験配信を無視 | ONの場合、P2P地震情報の訓練・試験電文は無視 |
 
+## イベントの詳細
+
+警報発令により以下のeventが発行される。なお、`scale`は震度の10倍で、震度5弱は`45`、震度5強は`50`、震度6弱は`55`、震度6強は`60`となる。
+
+```
+event_type: eew_alert_triggered
+data:
+  id: test
+  scale: 50
+  label: 5強
+  hypocenter: テスト震源
+  prefs:
+    - pref: 東京都
+      scale: 50
+  origin: LOCAL
+```
+  
 ## 動作確認
 
-`button.テスト送信` を押すと、実際のWebSocket受信をスキップしてダミーデータで応答処理（画像生成→キャスト→照明/解錠）のみを検証できます。
+`button.テスト送信` を押すと、実際のWebSocket受信をスキップしてダミーデータで~~応答処理（画像生成→キャスト→照明/解錠）のみ~~ 生成されるトリガーを検証できます。
 
 実際の受信パイプライン全体（WebSocket受信→パース→反応）を検証したい場合は、「訓練・試験配信を無視する」設定を一時的にOFFにし、P2P地震情報が定期的に配信する訓練・試験電文を待つ方法が確実です。
 
 ## 前提条件
 
-- キャスト機能は [catt](https://github.com/skorokithakis/catt)（Cast All The Things）を利用します。同一ネットワーク上でmDNSによるデバイス探索ができる環境が必要です
-- `homeassistant.internal_url` の設定が必要です（生成した警告画像をキャスト先デバイスから取得できるURL）
+- ~~キャスト機能は [catt](https://github.com/skorokithakis/catt)（Cast All The Things）を利用します。同一ネットワーク上でmDNSによるデバイス探索ができる環境が必要です~~
+- ~~`homeassistant.internal_url` の設定が必要です（生成した警告画像をキャスト先デバイスから取得できるURL）~~
 
 ## ライセンス
 
