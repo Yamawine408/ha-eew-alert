@@ -5,7 +5,7 @@ This Home Assistant integration is a fork of
 
 The original integration uses Chromecast to display warning images and control lights and locks when an alert is issued. This fork removes all Chromecast-related functionality and instead publishes the alert as a Home Assistant event. This allows users to control devices and perform other actions using their own Home Assistant automations.
 
-Directly connects to the P2P Earthquake Information WebSocket and receives Earthquake Early Warning (EEW) messages (code 556).
+Directly connects to the [P2P Earthquake Information WebSocket](https://www.p2pquake.net) and receives Earthquake Early Warning (EEW) messages (code 556).
 
 No MQTT broker or external container is required; everything runs within Home Assistant.
 
