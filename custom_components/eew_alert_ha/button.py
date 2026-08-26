@@ -8,7 +8,12 @@ from homeassistant.helpers.dispatcher import async_dispatcher_send
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from . import SIGNAL_UPDATE, EewListener, EewState
-from .const import CONF_TARGET_PREFS, DOMAIN, EVENT_EEW_TRIGGERED
+from .const import (
+    CONF_TARGET_PREFS,
+    DEFAULT_TARGET_PREFS,
+    DOMAIN,
+    EVENT_EEW_TRIGGERED,
+)
 
 
 async def async_setup_entry(
