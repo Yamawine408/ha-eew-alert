@@ -9,7 +9,6 @@ CONF_TARGET_PREFS = "target_prefs"
 DEFAULT_MIN_SCALE = 45  # 震度5弱
 DEFAULT_IGNORE_TEST = True
 DEFAULT_TARGET_PREFS: list[str] = []  # 空 = 全国対象(現在の全国最大震度で判定)
-DEFAULT_PRESENCE_ENTITIES: list[str] = []  # 空 = 在宅検知しない(常に実行)
 
 # 都道府県名(短縮形)。config_flowの選択肢および都道府県マッチングに使用
 PREFECTURES = [
