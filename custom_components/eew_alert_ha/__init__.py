@@ -2,7 +2,24 @@
 
 P2P地震情報(https://www.p2pquake.net/)のWebSocketに直接接続し、
 緊急地震速報(code:556)を受信する。しきい値以上の震度を受信した場合、
-自動的に警告画像を生成してChromecast/Google Home系デバイスへキャストする。
+Home Assistantに対しeew_alert_triggeredをトリガーする。
+この時のテストトリガーの内容は以下の通り。
+
+event_type: eew_alert_triggered
+data:
+  id: test
+  scale: 50
+  label: 5強
+  hypocenter: テスト震源
+  prefs:
+    - pref: XX県
+      scale: 50
+origin: LOCAL
+time_fired: '2026-08-26T04:41:48.112250+00:00'
+context:
+  id: 01M0Y5ZMTGKFTH1DVSV0GRY2N3
+  parent_id: null
+  user_id: null
 
 MQTTブローカーや外部コンテナは不要。HAだけで完結する。
 """
