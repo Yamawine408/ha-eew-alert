@@ -72,7 +72,7 @@ class EewAlertConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class EewAlertOptionsFlow(config_entries.OptionsFlow):
-    """設定の後から変更用(震度しきい値・キャスト先デバイス名など)。"""
+    """設定の後から変更用(地域、震度しきい値など)。"""
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         self._entry = config_entry
