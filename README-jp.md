@@ -1,3 +1,4 @@
+[English version](README.md)
 # EEW Alert HA
 
 このHome Assistantインテグレーションは[EEW Alert for Home Assistant](https://github.com/kotarou2211/ha-eew-alert)のforkです。
