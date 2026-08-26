@@ -19,19 +19,35 @@ from .const import (
     PREFECTURES,
 )
 
+SCALE_OPTIONS = {
+    "震度1": 10,
+    "震度2": 20,
+    "震度3": 30,
+    "震度4": 40,
+    "震度5弱": 45,
+    "震度5強": 50,
+    "震度6弱": 55,
+    "震度6強": 60,
+    "震度7": 70,
+}
+
+SCALE_LABELS = {value: label for label, value in SCALE_OPTIONS.items()}
+
 
 def _options_schema(defaults: dict[str, Any]) -> vol.Schema:
+    current_scale = defaults.get(CONF_MIN_SCALE, DEFAULT_MIN_SCALE)
+
     return vol.Schema(
         {
             vol.Required(
                 CONF_MIN_SCALE,
-                default=DEFAULT_MIN_SCALE,
-            ): selector.NumberSelector(
-                selector.NumberSelectorConfig(
-                    min=10,
-                    max=70,
-                    step=5,
-                    mode=selector.NumberSelectorMode.DROPDOWN,
+                default=SCALE_LABELS.get(
+                    current_scale, SCALE_LABELS[DEFAULT_MIN_SCALE]
+                ),
+            ): selector.SelectSelector(
+                selector.SelectSelectorConfig(
+                    options=list(SCALE_OPTIONS),
+                    mode=selector.SelectSelectorMode.DROPDOWN,
                 )
             ),
             vol.Optional(
@@ -56,6 +72,17 @@ def _options_schema(defaults: dict[str, Any]) -> vol.Schema:
     )
 
 
+def _convert_scale(user_input: dict[str, Any]) -> dict[str, Any]:
+    """Convert the Japanese scale label to the numeric scale value."""
+    data = dict(user_input)
+
+    scale_label = data.get(CONF_MIN_SCALE)
+    if isinstance(scale_label, str):
+        data[CONF_MIN_SCALE] = SCALE_OPTIONS[scale_label]
+
+    return data
+
+
 class EewAlertConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Handle initial setup."""
 
@@ -69,11 +96,14 @@ class EewAlertConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         if user_input is not None:
             return self.async_create_entry(
-                title="EEW Alert", data={}, options=user_input
+                title="EEW Alert",
+                data={},
+                options=_convert_scale(user_input),
             )
 
         return self.async_show_form(
-            step_id="user", data_schema=_options_schema({})
+            step_id="user",
+            data_schema=_options_schema({}),
         )
 
     @staticmethod
@@ -85,7 +115,7 @@ class EewAlertConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
 
 class EewAlertOptionsFlow(config_entries.OptionsFlow):
-    """設定の後から変更用(地域、震度しきい値など)。"""
+    """Handle updating the integration options."""
 
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         self._entry = config_entry
@@ -94,7 +124,10 @@ class EewAlertOptionsFlow(config_entries.OptionsFlow):
         self, user_input: dict[str, Any] | None = None
     ) -> config_entries.ConfigFlowResult:
         if user_input is not None:
-            return self.async_create_entry(title="", data=user_input)
+            return self.async_create_entry(
+                title="",
+                data=_convert_scale(user_input),
+            )
 
         return self.async_show_form(
             step_id="init",
