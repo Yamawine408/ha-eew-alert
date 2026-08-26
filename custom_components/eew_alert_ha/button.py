@@ -24,7 +24,7 @@ class EewAlertTestButton(ButtonEntity):
     """テスト用のダミー地震速報を発火させるボタン。
 
     実際のP2P地震情報を待たずに一連の動作を確認できる。
-	対象都道府県の絞り込みは無視して必ず実行する。
+    対象都道府県の絞り込みは無視して必ず実行する。
     """
 
     _attr_has_entity_name = True
@@ -50,7 +50,7 @@ class EewAlertTestButton(ButtonEntity):
         )
         async_dispatcher_send(self.hass, SIGNAL_UPDATE)
 
-	## Adding the following to fire a test event ##
+        ## Adding the following to fire a test event ##
         self.hass.bus.async_fire(
             EVENT_EEW_TRIGGERED,
             {
