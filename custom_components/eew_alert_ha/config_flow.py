@@ -31,7 +31,7 @@ def _options_schema(defaults: dict[str, Any]) -> vol.Schema:
                     step=5,
                     mode=selector.NumberSelectorMode.DROPDOWN,
                 )
-            )
+            ),
             vol.Optional(
                 CONF_TARGET_PREFS,
                 default=defaults.get(
