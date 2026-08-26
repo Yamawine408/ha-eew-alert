@@ -1,10 +1,10 @@
 {
   "domain": "eew_alert_ha",
   "name": "EEW Alert HA (緊急地震速報)",
-  "codeowners": ["@kotarou2211"],
+  "codeowners": ["@Yamawine408"],
+  "documentation": "https://github.com/Yamawine408/ha-eew-alert",
+  "issue_tracker": "https://github.com/Yamawine408/ha-eew-alert/issues"
   "config_flow": true,
-  "documentation": "https://github.com/kotarou2211/ha-eew-alert",
-  "issue_tracker": "https://github.com/kotarou2211/ha-eew-alert/issues",
   "iot_class": "cloud_push",
   "version": "0.1.0"
 }
