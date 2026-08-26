@@ -1,5 +1,5 @@
 {
-  "domain": "eew_alert",
+  "domain": "eew_alert_ha",
   "name": "EEW Alert HA (緊急地震速報)",
   "codeowners": ["@kotarou2211"],
   "config_flow": true,
