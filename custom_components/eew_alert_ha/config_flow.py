@@ -10,8 +10,10 @@ from homeassistant.helpers import selector
 
 from .const import (
     CONF_IGNORE_TEST,
+    CONF_MIN_SCALE,
     CONF_TARGET_PREFS,
     DEFAULT_IGNORE_TEST,
+    DEFAULT_MIN_SCALE,
     DEFAULT_TARGET_PREFS,
     DOMAIN,
     PREFECTURES,
