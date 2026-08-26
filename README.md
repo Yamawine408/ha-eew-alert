@@ -101,8 +101,6 @@ None. No Chromecast, MQTT broker, external container, or other additional softwa
 
 MIT License
 
-The Japanese font included in this repository (`NotoSansJP.ttf`) is distributed under the [SIL Open Font License 1.1](https://openfontlicense.org/).
-
 ## Disclaimer
 
 This software is an unofficial community-developed tool and is not a replacement for the official Earthquake Early Warning systems operated by the Japan Meteorological Agency or other official organizations.
