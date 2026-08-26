@@ -23,8 +23,8 @@ async def async_setup_entry(
 class EewAlertTestButton(ButtonEntity):
     """テスト用のダミー地震速報を発火させるボタン。
 
-    実際のP2P地震情報を待たずに、キャスト・照明ON・解錠(設定していれば)の
-    一連の動作を確認できる。対象都道府県の絞り込みは無視して必ず実行する。
+    実際のP2P地震情報を待たずに一連の動作を確認できる。
+	対象都道府県の絞り込みは無視して必ず実行する。
     """
 
     _attr_has_entity_name = True
@@ -37,8 +37,9 @@ class EewAlertTestButton(ButtonEntity):
         self._attr_unique_id = f"{entry.entry_id}_test_button"
 
     async def async_press(self) -> None:
-        target_prefs = self._entry.options.get(CONF_TARGET_PREFS) or []
-        test_pref = f"{target_prefs[0]}県" if target_prefs else "千葉県"
+		test_prefs = (
+		    [{"pref": f"{pref}県", "scale": 50} for pref in target_prefs]
+		)
 
         self._listener.state = EewState(
             label="5強",
