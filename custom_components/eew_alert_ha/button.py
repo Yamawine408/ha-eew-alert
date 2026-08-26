@@ -24,7 +24,7 @@ class EewAlertTestButton(ButtonEntity):
     """テスト用のダミー地震速報を発火させるボタン。
 
     実際のP2P地震情報を待たずに一連の動作を確認できる。
-    対象都道府県の絞り込みは無視して必ず実行する。
+    対象都道府県の設定をテストイベントにも反映する。
     """
 
     _attr_has_entity_name = True
@@ -37,24 +37,25 @@ class EewAlertTestButton(ButtonEntity):
         self._attr_unique_id = f"{entry.entry_id}_test_button"
 
     async def async_press(self) -> None:
-        target_prefs = self._config_entry.options.get(
+        target_prefs = self._entry.options.get(
             CONF_TARGET_PREFS,
             DEFAULT_TARGET_PREFS,
         )
-        test_prefs = (
-            [{"pref": f"{pref}県", "scale": 50} for pref in target_prefs]
-        )
+
+        test_prefs = [
+            {"pref": pref, "scale": 50}
+            for pref in target_prefs
+        ]
 
         self._listener.state = EewState(
             label="5強",
             scale=50,
             hypocenter="テスト震源",
-            prefs=[{"pref": test_pref, "scale": 50}],
+            prefs=test_prefs,
             time="",
         )
         async_dispatcher_send(self.hass, SIGNAL_UPDATE)
 
-        ## Adding the following to fire a test event ##
         self.hass.bus.async_fire(
             EVENT_EEW_TRIGGERED,
             {
@@ -62,7 +63,7 @@ class EewAlertTestButton(ButtonEntity):
                 "scale": 50,
                 "label": "5強",
                 "hypocenter": "テスト震源",
-                "prefs": [{"pref": test_pref, "scale": 50}],
+                "prefs": test_prefs,
+                "origin": "LOCAL",
             },
         )
-
