@@ -1,3 +1,4 @@
+[日本語版](README-jp.md)
 # EEW Alert HA
 
 This Home Assistant integration is a fork of
